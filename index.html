@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Work Effectiveness & Feedback Survey</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F8FAFC; color: #0F172A; font-size: 14px; line-height: 1.6; padding: 20px 16px 60px; }
+.container { max-width: 860px; margin: 0 auto; }
+.hero { background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%); border-radius: 14px; padding: 26px 30px; margin-bottom: 18px; color: #fff; }
+.hero-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; margin-bottom: 5px; }
+.hero h1 { font-size: 20px; font-weight: 800; margin-bottom: 7px; }
+.hero p { font-size: 13px; opacity: 0.85; line-height: 1.6; }
+.hero-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.hero-badge { font-size: 11px; background: rgba(255,255,255,0.15); padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+.card { background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; padding: 20px 22px; margin-bottom: 14px; }
+.q-title { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 14px; font-weight: 700; }
+.q-num { background: #1D4ED8; color: #fff; border-radius: 6px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.field { margin-bottom: 16px; }
+.field:last-child { margin-bottom: 0; }
+.lbl { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 5px; }
+.req { color: #DC2626; }
+.radio-group { display: flex; flex-wrap: wrap; gap: 6px; }
+.radio-group label { display: flex; align-items: center; gap: 6px; padding: 5px 11px; border: 1.5px solid #E2E8F0; border-radius: 8px; background: #fff; cursor: pointer; font-size: 13px; transition: all 0.12s; user-select: none; }
+.radio-group label:hover { border-color: #93C5FD; background: #F0F9FF; }
+.radio-group input[type=radio] { accent-color: #1D4ED8; width: 14px; height: 14px; flex-shrink: 0; }
+.radio-group input[type=radio]:checked + span { color: #1D4ED8; font-weight: 600; }
+.radio-group label:has(input:checked) { border-color: #1D4ED8; background: #EFF6FF; }
+textarea, input[type=text], input[type=number], input[type=time] { width: 100%; padding: 8px 11px; border: 1.5px solid #E2E8F0; border-radius: 8px; font-size: 13px; font-family: inherit; color: #0F172A; background: #fff; outline: none; transition: border-color 0.12s; }
+textarea:focus, input:focus { border-color: #1D4ED8; }
+textarea { resize: vertical; line-height: 1.6; }
+.table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid #E2E8F0; }
+table { border-collapse: collapse; width: 100%; min-width: 960px; font-size: 11px; }
+thead tr.hdr { background: #1E3A5F; }
+thead tr.hdr th { color: #fff; padding: 8px 6px; text-align: left; font-size: 10px; font-weight: 600; line-height: 1.3; border-right: 1px solid rgba(255,255,255,0.12); vertical-align: top; }
+thead tr.sub { background: #EFF6FF; }
+thead tr.sub td { padding: 4px 6px; font-size: 10px; color: #64748B; font-style: italic; border-right: 1px solid #E2E8F0; }
+tbody tr { border-top: 1px solid #E2E8F0; }
+tbody tr:nth-child(even) { background: #F8FAFC; }
+tbody td { padding: 4px 4px; border-right: 1px solid #E2E8F0; }
+tbody td.day { padding: 6px 10px; font-weight: 700; font-size: 12px; white-space: nowrap; color: #1E3A5F; }
+.ti { width: 100%; padding: 4px 5px; border: 1px solid #CBD5E1; border-radius: 4px; font-size: 11px; font-family: inherit; background: #fff; color: #0F172A; outline: none; }
+.ti:focus { border-color: #1D4ED8; }
+.err-msg { color: #DC2626; font-size: 11px; margin-top: 4px; display: none; }
+.err-msg.show { display: block; }
+.field.invalid .radio-group label { border-color: #FECACA; }
+.submit-row { display: flex; justify-content: flex-end; align-items: center; gap: 12px; padding-top: 8px; }
+.submit-btn { padding: 11px 34px; border-radius: 10px; border: none; background: #1D4ED8; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; }
+.submit-btn:hover { background: #1E40AF; }
+.submit-btn:disabled { background: #93C5FD; cursor: not-allowed; }
+.form-err { font-size: 12px; color: #DC2626; display: none; }
+#banner { display: none; padding: 10px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; text-align: center; }
+#banner.loading { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
+#banner.error   { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+#success { display: none; text-align: center; padding: 48px 32px; background: #fff; border: 1px solid #E2E8F0; border-radius: 14px; }
+.success-icon { width: 60px; height: 60px; border-radius: 50%; background: #F0FDF4; border: 2px solid #16A34A; display: flex; align-items: center; justify-content: center; font-size: 26px; color: #16A34A; margin: 0 auto 18px; }
+#success h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+#success p { color: #64748B; font-size: 13px; max-width: 400px; margin: 0 auto 22px; line-height: 1.6; }
+.reset-btn { padding: 9px 26px; border-radius: 8px; border: 1.5px solid #1D4ED8; background: #EFF6FF; color: #1D4ED8; font-size: 13px; font-weight: 600; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <div class="hero-label">Accenture · Internal Survey</div>
+  <h1>Work Effectiveness &amp; Feedback Survey</h1>
+  <p>Help us understand your work patterns, call load, and recognition preferences. Fields marked <span style="color:#FCA5A5;">*</span> are required.</p>
+  <div class="hero-badges">
+    <span class="hero-badge">7 questions</span>
+    <span class="hero-badge">~5 minutes</span>
+    <span class="hero-badge">Saved to SharePoint</span>
+  </div>
+</div>
+
+<div id="banner"></div>
+
+<form id="survey-form" novalidate>
+
+  <div class="card">
+    <div class="q-title"><span class="q-num">Q1</span>Shift Type</div>
+    <div class="field" id="f-shiftType">
+      <label class="lbl">Select your shift type <span class="req">*</span></label>
+      <div class="radio-group">
+        <label><input type="radio" name="shiftType" value="Day Duty (DD)"><span>Day Duty (DD)</span></label>
+        <label><input type="radio" name="shiftType" value="Night Duty (ND)"><span>Night Duty (ND)</span></label>
+        <label><input type="radio" name="shiftType" value="Split Shift"><span>Split Shift</span></label>
+        <label><input type="radio" name="shiftType" value="Rotational"><span>Rotational</span></label>
+        <label><input type="radio" name="shiftType" value="Other"><span>Other</span></label>
+      </div>
+      <div class="err-msg" id="e-shiftType">&#9888; Please select an option.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="q-title"><span class="q-num">Q2</span>Shift Timing</div>
+    <div class="field" id="f-shiftTiming">
+      <label class="lbl">Select your shift timing <span class="req">*</span></label>
+      <div class="radio-group">
+        <label><input type="radio" name="shiftTiming" value="6 AM - 2 PM"><span>6 AM – 2 PM</span></label>
+        <label><input type="radio" name="shiftTiming" value="2 PM - 10 PM"><span>2 PM – 10 PM</span></label>
+        <label><input type="radio" name="shiftTiming" value="10 PM - 6 AM"><span>10 PM – 6 AM</span></label>
+        <label><input type="radio" name="shiftTiming" value="8 AM - 5 PM"><span>8 AM – 5 PM</span></label>
+        <label><input type="radio" name="shiftTiming" value="Flexible"><span>Flexible</span></label>
+      </div>
+      <div class="err-msg" id="e-shiftTiming">&#9888; Please select an option.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="q-title"><span class="q-num">Q3</span>Shift Allowance Provided</div>
+    <div class="field" id="f-shiftAllowance">
+      <label class="lbl">Is a shift allowance provided? <span class="req">*</span></label>
+      <div class="radio-group">
+        <label><input type="radio" name="shiftAllowance" value="Yes"><span>Yes</span></label>
+        <label><input type="radio" name="shiftAllowance" value="No"><span>No</span></label>
+        <label><input type="radio" name="shiftAllowance" value="Not sure"><span>Not sure</span></label>
+      </div>
+      <div class="err-msg" id="e-shiftAllowance">&#9888; Please select an option.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="q-title"><span class="q-num">Q4</span>Calls — Daily Metrics</div>
+    <p style="font-size:12px;color:#64748B;margin-bottom:10px;">Enter your daily call data. Scroll right to see all columns. * Adhoc = past 3-month average.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr class="hdr">
+            <th style="min-width:80px;">Day</th>
+            <th style="min-width:70px;">No. of calls (Before 4 PM)</th>
+            <th style="min-width:70px;">No. of calls (Post 4 PM)</th>
+            <th style="min-width:62px;"># Offshore call</th>
+            <th style="min-width:62px;"># Onshore call</th>
+            <th style="min-width:62px;"># Client Call</th>
+            <th style="min-width:82px;">* Adhoc Calls (past 3 months)</th>
+            <th style="min-width:72px;"># calls you contribute</th>
+            <th style="min-width:82px;"># calls listener / observer</th>
+            <th style="min-width:86px;"># calls both offshore &amp; onshore timing</th>
+            <th style="min-width:94px;">Start time first call (Post 4 PM)</th>
+            <th style="min-width:84px;">End time of last call</th>
+          </tr>
+          <tr class="sub">
+            <td></td><td>Number</td><td>Number</td><td>Number</td><td>Number</td>
+            <td>Number</td><td>Number</td><td>Number</td><td>Number</td>
+            <td>Number</td><td>Time</td><td>Time</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="day">Monday</td><td><input class="ti" type="number" data-day="Monday" data-col="b4" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Monday" data-col="a4" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Monday" data-col="off" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Monday" data-col="on" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Monday" data-col="cli" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Monday" data-col="adhoc" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Monday" data-col="contrib" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Monday" data-col="listen" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Monday" data-col="both" min="0" placeholder="0"></td><td><input class="ti" type="time" data-day="Monday" data-col="start"></td><td><input class="ti" type="time" data-day="Monday" data-col="end"></td></tr>
+          <tr><td class="day">Tuesday</td><td><input class="ti" type="number" data-day="Tuesday" data-col="b4" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Tuesday" data-col="a4" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Tuesday" data-col="off" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Tuesday" data-col="on" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Tuesday" data-col="cli" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Tuesday" data-col="adhoc" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Tuesday" data-col="contrib" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Tuesday" data-col="listen" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Tuesday" data-col="both" min="0" placeholder="0"></td><td><input class="ti" type="time" data-day="Tuesday" data-col="start"></td><td><input class="ti" type="time" data-day="Tuesday" data-col="end"></td></tr>
+          <tr><td class="day">Wednesday</td><td><input class="ti" type="number" data-day="Wednesday" data-col="b4" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Wednesday" data-col="a4" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Wednesday" data-col="off" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Wednesday" data-col="on" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Wednesday" data-col="cli" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Wednesday" data-col="adhoc" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Wednesday" data-col="contrib" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Wednesday" data-col="listen" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Wednesday" data-col="both" min="0" placeholder="0"></td><td><input class="ti" type="time" data-day="Wednesday" data-col="start"></td><td><input class="ti" type="time" data-day="Wednesday" data-col="end"></td></tr>
+          <tr><td class="day">Thursday</td><td><input class="ti" type="number" data-day="Thursday" data-col="b4" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Thursday" data-col="a4" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Thursday" data-col="off" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Thursday" data-col="on" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Thursday" data-col="cli" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Thursday" data-col="adhoc" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Thursday" data-col="contrib" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Thursday" data-col="listen" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Thursday" data-col="both" min="0" placeholder="0"></td><td><input class="ti" type="time" data-day="Thursday" data-col="start"></td><td><input class="ti" type="time" data-day="Thursday" data-col="end"></td></tr>
+          <tr><td class="day">Friday</td><td><input class="ti" type="number" data-day="Friday" data-col="b4" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Friday" data-col="a4" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Friday" data-col="off" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Friday" data-col="on" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Friday" data-col="cli" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Friday" data-col="adhoc" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Friday" data-col="contrib" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Friday" data-col="listen" min="0" placeholder="0"></td><td><input class="ti" type="number" data-day="Friday" data-col="both" min="0" placeholder="0"></td><td><input class="ti" type="time" data-day="Friday" data-col="start"></td><td><input class="ti" type="time" data-day="Friday" data-col="end"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="q-title"><span class="q-num">Q5</span>Ideas for Shortening Calls &amp; Call Load</div>
+    <div class="field">
+      <label class="lbl">Ideas for shortening calls (open text)</label>
+      <textarea id="ideasText" rows="3" placeholder="Share any ideas to make calls more efficient…"></textarea>
+    </div>
+    <div class="field" id="f-totalTime">
+      <label class="lbl">Total time spent in calls on a typical day <span class="req">*</span></label>
+      <div class="radio-group">
+        <label><input type="radio" name="totalTime" value="Less than 1 hr"><span>&lt;1 hr</span></label>
+        <label><input type="radio" name="totalTime" value="1-2 hrs"><span>1–2 hrs</span></label>
+        <label><input type="radio" name="totalTime" value="2-3 hrs"><span>2–3 hrs</span></label>
+        <label><input type="radio" name="totalTime" value="3-4 hrs"><span>3–4 hrs</span></label>
+        <label><input type="radio" name="totalTime" value="More than 4 hrs"><span>&gt;4 hrs</span></label>
+      </div>
+      <div class="err-msg" id="e-totalTime">&#9888; Please select an option.</div>
+    </div>
+    <div class="field" id="f-overlapping">
+      <label class="lbl">Do you frequently have overlapping / back-to-back calls with no breaks? <span class="req">*</span></label>
+      <div class="radio-group">
+        <label><input type="radio" name="overlapping" value="Never"><span>Never</span></label>
+        <label><input type="radio" name="overlapping" value="Rarely"><span>Rarely</span></label>
+        <label><input type="radio" name="overlapping" value="Sometimes"><span>Sometimes</span></label>
+        <label><input type="radio" name="overlapping" value="Often"><span>Often</span></label>
+        <label><input type="radio" name="overlapping" value="Always"><span>Always</span></label>
+      </div>
+      <div class="err-msg" id="e-overlapping">&#9888; Please select an option.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="q-title"><span class="q-num">Q6</span>How Would You Like to Get Recognised?</div>
+    <div class="field" id="f-recogFreq">
+      <label class="lbl">Frequency <span class="req">*</span></label>
+      <div class="radio-group">
+        <label><input type="radio" name="recogFreq" value="Real-time (immediate)"><span>Real-time (immediate)</span></label>
+        <label><input type="radio" name="recogFreq" value="Daily"><span>Daily</span></label>
+        <label><input type="radio" name="recogFreq" value="Weekly"><span>Weekly</span></label>
+        <label><input type="radio" name="recogFreq" value="Monthly"><span>Monthly</span></label>
+        <label><input type="radio" name="recogFreq" value="Quarterly"><span>Quarterly</span></label>
+      </div>
+      <div class="err-msg" id="e-recogFreq">&#9888; Please select an option.</div>
+    </div>
+    <div class="field" id="f-recogMode">
+      <label class="lbl">Mode <span class="req">*</span></label>
+      <div class="radio-group">
+        <label><input type="radio" name="recogMode" value="Public shout-out"><span>Public shout-out</span></label>
+        <label><input type="radio" name="recogMode" value="Private message from manager"><span>Private message from manager</span></label>
+        <label><input type="radio" name="recogMode" value="Award / certificate"><span>Award / certificate</span></label>
+        <label><input type="radio" name="recogMode" value="Monetary bonus"><span>Monetary bonus</span></label>
+        <label><input type="radio" name="recogMode" value="Extra time off"><span>Extra time off</span></label>
+        <label><input type="radio" name="recogMode" value="Other"><span>Other</span></label>
+      </div>
+      <div class="err-msg" id="e-recogMode">&#9888; Please select an option.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="q-title"><span class="q-num">Q7</span>Any Help You Require to Implement GenAI / Agentic AI</div>
+    <div class="field">
+      <label class="lbl">Describe any GenAI / Agentic AI support or tooling you need</label>
+      <textarea id="genaiText" rows="3" placeholder="e.g. AI meeting summariser, automated call notes, agent to handle follow-ups…"></textarea>
+    </div>
+  </div>
+
+  <div class="submit-row">
+    <span class="form-err" id="form-err">&#9888; Please fill in all required fields above.</span>
+    <button type="submit" class="submit-btn" id="sbtn">Submit Survey &#8594;</button>
+  </div>
+
+</form>
+
+<div id="success">
+  <div class="success-icon">&#10003;</div>
+  <h2>Thank you!</h2>
+  <p>Your Work Effectiveness &amp; Feedback Survey has been submitted and saved to SharePoint successfully.</p>
+  <button class="reset-btn" onclick="resetForm()">Submit another response</button>
+</div>
+
+</div>
+
+<script>
+var SITE_URL  = "https://ts.accenture.com/sites/FeedbackSurvey";
+var LIST_NAME = "SurveyResponses";
+
+var REQUIRED = [
+  {n:"shiftType",     f:"f-shiftType",     e:"e-shiftType"},
+  {n:"shiftTiming",   f:"f-shiftTiming",   e:"e-shiftTiming"},
+  {n:"shiftAllowance",f:"f-shiftAllowance",e:"e-shiftAllowance"},
+  {n:"totalTime",     f:"f-totalTime",     e:"e-totalTime"},
+  {n:"overlapping",   f:"f-overlapping",   e:"e-overlapping"},
+  {n:"recogFreq",     f:"f-recogFreq",     e:"e-recogFreq"},
+  {n:"recogMode",     f:"f-recogMode",     e:"e-recogMode"}
+];
+
+function validate() {
+  var ok = true;
+  for (var i=0;i<REQUIRED.length;i++) {
+    var r=REQUIRED[i], chk=document.querySelector('input[name="'+r.n+'"]:checked');
+    document.getElementById(r.f).classList[chk?'remove':'add']('invalid');
+    document.getElementById(r.e).classList[chk?'remove':'add']('show');
+    if(!chk) ok=false;
+  }
+  return ok;
+}
+
+function getCallData() {
+  var days=["Monday","Tuesday","Wednesday","Thursday","Friday"];
+  var cols=["b4","a4","off","on","cli","adhoc","contrib","listen","both","start","end"];
+  var res={};
+  for(var d=0;d<days.length;d++){
+    res[days[d]]={};
+    for(var c=0;c<cols.length;c++){
+      var el=document.querySelector('input[data-day="'+days[d]+'"][data-col="'+cols[c]+'"]');
+      res[days[d]][cols[c]]=el?el.value:"";
+    }
+  }
+  return res;
+}
+
+function handleSubmit(e) {
+  e.preventDefault();
+  if(!validate()){
+    var fe=document.getElementById("form-err"); if(fe) fe.style.display="inline";
+    var inv=document.querySelector(".field.invalid"); if(inv) inv.scrollIntoView({behavior:"smooth",block:"center"});
+    return;
+  }
+  var val=function(n){var el=document.querySelector('input[name="'+n+'"]:checked');return el?el.value:"";};
+  var payload={
+    "__metadata":{"type":"SP.Data."+LIST_NAME+"ListItem"},
+    "Title":"Survey — "+new Date().toLocaleDateString("en-GB"),
+    "ShiftType":val("shiftType"),
+    "ShiftTiming":val("shiftTiming"),
+    "ShiftAllowance":val("shiftAllowance"),
+    "CallsData":JSON.stringify(getCallData()),
+    "IdeasForShorting":document.getElementById("ideasText").value,
+    "TotalTimeInCalls":val("totalTime"),
+    "OverlappingCalls":val("overlapping"),
+    "RecognitionFrequency":val("recogFreq"),
+    "RecognitionMode":val("recogMode"),
+    "GenAIHelp":document.getElementById("genaiText").value
+  };
+  var btn=document.getElementById("sbtn"), banner=document.getElementById("banner");
+  btn.disabled=true; btn.textContent="Submitting\u2026";
+  banner.className="loading"; banner.textContent="\u23F3 Saving to SharePoint\u2026"; banner.style.display="block";
+  var xhr=new XMLHttpRequest();
+  xhr.open("POST",SITE_URL+"/_api/contextinfo",true);
+  xhr.setRequestHeader("Accept","application/json;odata=verbose");
+  xhr.withCredentials=true;
+  xhr.onload=function(){
+    if(xhr.status!==200){
+      banner.className="error"; banner.textContent="\u274C Cannot connect to SharePoint ("+xhr.status+"). Make sure you are signed in to Accenture.";
+      btn.disabled=false; btn.textContent="Submit Survey \u2192"; return;
+    }
+    var digest=JSON.parse(xhr.responseText).d.GetContextWebInformation.FormDigestValue;
+    var xhr2=new XMLHttpRequest();
+    xhr2.open("POST",SITE_URL+"/_api/web/lists/getbytitle('"+LIST_NAME+"')/items",true);
+    xhr2.setRequestHeader("Accept","application/json;odata=verbose");
+    xhr2.setRequestHeader("Content-Type","application/json;odata=verbose");
+    xhr2.setRequestHeader("X-RequestDigest",digest);
+    xhr2.withCredentials=true;
+    xhr2.onload=function(){
+      if(xhr2.status===201||xhr2.status===200){
+        document.getElementById("survey-form").style.display="none";
+        document.getElementById("success").style.display="block";
+        banner.style.display="none";
+      } else {
+        banner.className="error"; banner.textContent="\u274C Error "+xhr2.status+": "+xhr2.responseText.substring(0,200);
+        btn.disabled=false; btn.textContent="Submit Survey \u2192";
+      }
+    };
+    xhr2.onerror=function(){ banner.className="error"; banner.textContent="\u274C Network error. Please try again."; btn.disabled=false; btn.textContent="Submit Survey \u2192"; };
+    xhr2.send(JSON.stringify(payload));
+  };
+  xhr.onerror=function(){ banner.className="error"; banner.textContent="\u274C Cannot reach SharePoint. Open this page from within SharePoint."; btn.disabled=false; btn.textContent="Submit Survey \u2192"; };
+  xhr.send();
+}
+
+function resetForm() {
+  document.getElementById("survey-form").reset();
+  document.getElementById("survey-form").style.display="block";
+  document.getElementById("success").style.display="none";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  document.getElementById("survey-form").addEventListener("submit", handleSubmit);
+  for(var i=0;i<REQUIRED.length;i++){
+    (function(r){
+      var els=document.querySelectorAll('input[name="'+r.n+'"]');
+      for(var j=0;j<els.length;j++) els[j].addEventListener("change",function(){
+        document.getElementById(r.f).classList.remove("invalid");
+        document.getElementById(r.e).classList.remove("show");
+        var fe=document.getElementById("form-err"); if(fe) fe.style.display="none";
+      });
+    })(REQUIRED[i]);
+  }
+});
+</script>
+</body>
+</html>
