@@ -70,7 +70,7 @@ tbody td.day { padding: 6px 10px; font-weight: 700; font-size: 12px; white-space
   <div class="hero-badges">
     <span class="hero-badge">7 questions</span>
     <span class="hero-badge">~5 minutes</span>
-    <span class="hero-badge">Saved to SharePoint</span>
+    <span class="hero-badge">Saved to GitHub</span>
   </div>
 </div>
 
@@ -240,8 +240,10 @@ tbody td.day { padding: 6px 10px; font-weight: 700; font-size: 12px; white-space
 </div>
 
 <script>
-var SITE_URL  = "https://ts.accenture.com/sites/FeedbackSurvey";
-var LIST_NAME = "SurveyResponses";
+var GITHUB_TOKEN = "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";
+var GITHUB_REPO  = "Agent-Saishravan/feedback-survey";
+var GITHUB_BRANCH = "main";
+
 
 var REQUIRED = [
   {n:"shiftType",     f:"f-shiftType",     e:"e-shiftType"},
@@ -287,53 +289,56 @@ function handleSubmit(e) {
   }
   var val=function(n){var el=document.querySelector('input[name="'+n+'"]:checked');return el?el.value:"";};
   var payload={
-    "__metadata":{"type":"SP.Data."+LIST_NAME+"ListItem"},
-    "Title":"Survey — "+new Date().toLocaleDateString("en-GB"),
-    "ShiftType":val("shiftType"),
-    "ShiftTiming":val("shiftTiming"),
-    "ShiftAllowance":val("shiftAllowance"),
-    "CallsData":JSON.stringify(getCallData()),
-    "IdeasForShorting":document.getElementById("ideasText").value,
-    "TotalTimeInCalls":val("totalTime"),
-    "OverlappingCalls":val("overlapping"),
-    "RecognitionFrequency":val("recogFreq"),
-    "RecognitionMode":val("recogMode"),
-    "GenAIHelp":document.getElementById("genaiText").value
+    "submittedAt": new Date().toISOString(),
+    "submittedDate": new Date().toLocaleDateString("en-GB"),
+    "shiftType": val("shiftType"),
+    "shiftTiming": val("shiftTiming"),
+    "shiftAllowance": val("shiftAllowance"),
+    "callsData": getCallData(),
+    "ideasForShorting": document.getElementById("ideasText").value,
+    "totalTimeInCalls": val("totalTime"),
+    "overlappingCalls": val("overlapping"),
+    "recognitionFrequency": val("recogFreq"),
+    "recognitionMode": val("recogMode"),
+    "genAIHelp": document.getElementById("genaiText").value
   };
+
   var btn=document.getElementById("sbtn"), banner=document.getElementById("banner");
   btn.disabled=true; btn.textContent="Submitting\u2026";
-  banner.className="loading"; banner.textContent="\u23F3 Saving to SharePoint\u2026"; banner.style.display="block";
-  var xhr=new XMLHttpRequest();
-  xhr.open("POST",SITE_URL+"/_api/contextinfo",true);
-  xhr.setRequestHeader("Accept","application/json;odata=verbose");
-  xhr.withCredentials=true;
-  xhr.onload=function(){
-    if(xhr.status!==200){
-      banner.className="error"; banner.textContent="\u274C Cannot connect to SharePoint ("+xhr.status+"). Make sure you are signed in to Accenture.";
-      btn.disabled=false; btn.textContent="Submit Survey \u2192"; return;
+  banner.className="loading"; banner.textContent="\u23F3 Saving your response\u2026"; banner.style.display="block";
+
+  var ts = new Date().toISOString().replace(/[:.]/g,"-");
+  var fileName = "responses/response-" + ts + ".json";
+  var apiUrl = "https://api.github.com/repos/" + GITHUB_REPO + "/contents/" + fileName;
+
+  var content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("PUT", apiUrl, true);
+  xhr.setRequestHeader("Authorization", "token " + GITHUB_TOKEN);
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.setRequestHeader("Accept", "application/vnd.github+json");
+  xhr.onload = function() {
+    if(xhr.status === 201 || xhr.status === 200) {
+      document.getElementById("survey-form").style.display="none";
+      document.getElementById("success").style.display="block";
+      banner.style.display="none";
+    } else {
+      banner.className="error";
+      banner.textContent="\u274C Error "+xhr.status+": Could not save response. Please try again.";
+      btn.disabled=false; btn.textContent="Submit Survey \u2192";
     }
-    var digest=JSON.parse(xhr.responseText).d.GetContextWebInformation.FormDigestValue;
-    var xhr2=new XMLHttpRequest();
-    xhr2.open("POST",SITE_URL+"/_api/web/lists/getbytitle('"+LIST_NAME+"')/items",true);
-    xhr2.setRequestHeader("Accept","application/json;odata=verbose");
-    xhr2.setRequestHeader("Content-Type","application/json;odata=verbose");
-    xhr2.setRequestHeader("X-RequestDigest",digest);
-    xhr2.withCredentials=true;
-    xhr2.onload=function(){
-      if(xhr2.status===201||xhr2.status===200){
-        document.getElementById("survey-form").style.display="none";
-        document.getElementById("success").style.display="block";
-        banner.style.display="none";
-      } else {
-        banner.className="error"; banner.textContent="\u274C Error "+xhr2.status+": "+xhr2.responseText.substring(0,200);
-        btn.disabled=false; btn.textContent="Submit Survey \u2192";
-      }
-    };
-    xhr2.onerror=function(){ banner.className="error"; banner.textContent="\u274C Network error. Please try again."; btn.disabled=false; btn.textContent="Submit Survey \u2192"; };
-    xhr2.send(JSON.stringify(payload));
   };
-  xhr.onerror=function(){ banner.className="error"; banner.textContent="\u274C Cannot reach SharePoint. Open this page from within SharePoint."; btn.disabled=false; btn.textContent="Submit Survey \u2192"; };
-  xhr.send();
+  xhr.onerror = function() {
+    banner.className="error";
+    banner.textContent="\u274C Network error. Please check your connection and try again.";
+    btn.disabled=false; btn.textContent="Submit Survey \u2192";
+  };
+  xhr.send(JSON.stringify({
+    "message": "New survey response — " + new Date().toLocaleDateString("en-GB"),
+    "content": content,
+    "branch": GITHUB_BRANCH
+  }));
 }
 
 function resetForm() {
